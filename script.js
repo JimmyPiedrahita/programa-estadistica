@@ -519,7 +519,7 @@ function renderSummary(stats, containerId) {
 }
 
 /**
- * Genera conclusiones automáticas en lenguaje natural
+ * Genera conclusiones automáticas enfocadas en los gráficos
  * @param {Array} freqRows - Datos de frecuencias
  * @param {Object} stats - Estadísticas calculadas
  * @returns {string} HTML con conclusiones
@@ -527,56 +527,65 @@ function renderSummary(stats, containerId) {
 function generateAutomaticConclusions(freqRows, stats) {
     let conclusions = [];
     
-    // Interpretación de la media
-    conclusions.push(`📊 <strong>Análisis de tendencia central:</strong> En promedio, los datos presentan un valor de <span class="highlight">${stats.mean.toFixed(2)}</span>. Esto significa que el valor típico o esperado en esta distribución se encuentra alrededor de este número.`);
+    // === CONCLUSIONES DEL GRÁFICO DE BARRAS ===
+    conclusions.push(`📊 <strong>Análisis del Gráfico de Barras:</strong>`);
     
-    // Interpretación de la moda
-    const modeInfo = stats.modeInfo;
-    if (modeInfo.type === 'ninguna') {
-        conclusions.push(`📈 <strong>Análisis de la moda:</strong> No existe moda en estos datos, ya que todos los valores aparecen con la misma frecuencia. Esto indica una distribución uniforme.`);
-    } else if (modeInfo.type === 'unimodal') {
-        const modePercentage = freqRows.find(row => row.value === modeInfo.modes[0])?.percentage || 0;
-        conclusions.push(`📈 <strong>Análisis de la moda:</strong> El valor más frecuente es <span class="highlight">${modeInfo.modes[0]}</span>, apareciendo ${modeInfo.frequency} veces (${modePercentage}% de los datos). Este es el valor más representativo de la muestra.`);
+    // Conclusión 1: Análisis de altura de barras y distribución
+    const maxFreq = Math.max(...freqRows.map(row => row.fa));
+    const minFreq = Math.min(...freqRows.map(row => row.fa));
+    const valuesWithMaxFreq = freqRows.filter(row => row.fa === maxFreq);
+    
+    if (maxFreq === minFreq) {
+        conclusions.push(`� <strong>Distribución uniforme:</strong> En el gráfico de barras se observa que todas las barras tienen la misma altura (frecuencia = ${maxFreq}), lo que indica una distribución perfectamente uniforme donde todos los valores aparecen con la misma frecuencia.`);
     } else {
-        const modesList = modeInfo.modes.join(', ');
-        conclusions.push(`📈 <strong>Análisis de la moda:</strong> Esta distribución es ${modeInfo.type}, con los valores <span class="highlight">${modesList}</span> apareciendo cada uno ${modeInfo.frequency} veces. Esto indica múltiples picos en la distribución.`);
+        const tallestBars = valuesWithMaxFreq.map(row => row.value).join(', ');
+        conclusions.push(`� <strong>Barras dominantes:</strong> El gráfico de barras muestra que ${valuesWithMaxFreq.length === 1 ? 'la barra más alta corresponde al valor' : 'las barras más altas corresponden a los valores'} <span class="highlight">${tallestBars}</span> con una frecuencia de <span class="highlight">${maxFreq}</span>, destacándose claramente sobre las demás barras del gráfico.`);
     }
     
-    // Valores extremos
-    conclusions.push(`🔢 <strong>Valores extremos:</strong> El valor mínimo es <span class="highlight">${stats.min}</span> y el máximo es <span class="highlight">${stats.max}</span>, lo que resulta en un rango de <span class="highlight">${stats.range}</span> unidades.`);
+    // Conclusión 2: Análisis de patrón de distribución
+    const orderedFreqs = freqRows.map(row => row.fa);
+    const isIncreasing = orderedFreqs.every((freq, i) => i === 0 || freq >= orderedFreqs[i-1]);
+    const isDecreasing = orderedFreqs.every((freq, i) => i === 0 || freq <= orderedFreqs[i-1]);
     
-    // Valores con mayor porcentaje
+    if (isIncreasing && !isDecreasing) {
+        conclusions.push(`� <strong>Patrón creciente:</strong> Las barras del gráfico muestran un patrón ascendente, donde las frecuencias tienden a aumentar conforme avanzan los valores, creando una forma creciente en la distribución.`);
+    } else if (isDecreasing && !isIncreasing) {
+        conclusions.push(`🔹 <strong>Patrón decreciente:</strong> Las barras del gráfico presentan un patrón descendente, donde las frecuencias disminuyen progresivamente, formando una distribución decreciente.`);
+    } else {
+        const uniqueFreqs = [...new Set(orderedFreqs)].length;
+        if (uniqueFreqs === 1) {
+            conclusions.push(`� <strong>Altura uniforme:</strong> Todas las barras mantienen la misma altura en el gráfico, indicando que no hay valores predominantes en la distribución.`);
+        } else {
+            conclusions.push(`🔹 <strong>Distribución irregular:</strong> Las barras del gráfico no siguen un patrón específico, presentando alturas variables que crean una distribución irregular con picos y valles a lo largo de los diferentes valores.`);
+        }
+    }
+    
+    // === CONCLUSIONES DEL GRÁFICO DE PASTEL ===
+    conclusions.push(`🥧 <strong>Análisis del Gráfico de Pastel:</strong>`);
+    
+    // Conclusión 1: Análisis de sectores dominantes
     const maxPercentage = Math.max(...freqRows.map(row => row.percentage));
-    const maxPercentageValues = freqRows.filter(row => row.percentage === maxPercentage);
+    const sectorsWithMaxPercentage = freqRows.filter(row => row.percentage === maxPercentage);
     
-    if (maxPercentageValues.length === 1) {
-        conclusions.push(`💯 <strong>Valor más representativo:</strong> El valor <span class="highlight">${maxPercentageValues[0].value}</span> representa el <span class="highlight">${maxPercentage}%</span> de todos los datos, siendo el más significativo en la muestra.`);
+    if (maxPercentage >= 50) {
+        const dominantValue = sectorsWithMaxPercentage[0].value;
+        conclusions.push(`� <strong>Sector dominante:</strong> En el gráfico de pastel se observa que el sector correspondiente al valor <span class="highlight">${dominantValue}</span> ocupa más de la mitad del círculo (<span class="highlight">${maxPercentage}%</span>), dominando visualmente la distribución y evidenciando su alta representatividad en los datos.`);
     } else {
-        const valuesList = maxPercentageValues.map(row => row.value).join(', ');
-        conclusions.push(`💯 <strong>Valores más representativos:</strong> Los valores <span class="highlight">${valuesList}</span> comparten el mayor porcentaje con <span class="highlight">${maxPercentage}%</span> cada uno.`);
+        const largestSectors = sectorsWithMaxPercentage.map(row => `${row.value} (${row.percentage}%)`).join(', ');
+        conclusions.push(`� <strong>Sectores principales:</strong> El gráfico de pastel muestra que ${sectorsWithMaxPercentage.length === 1 ? 'el sector más grande corresponde al valor' : 'los sectores más grandes corresponden a los valores'} <span class="highlight">${largestSectors}</span>, aunque ningún sector individual domina completamente el círculo.`);
     }
     
-    // Análisis de dispersión
-    const cv = (stats.stdDev / stats.mean) * 100; // Coeficiente de variación
-    let dispersionAnalysis;
+    // Conclusión 2: Análisis de equilibrio de sectores
+    const minPercentage = Math.min(...freqRows.map(row => row.percentage));
+    const percentageRange = maxPercentage - minPercentage;
     
-    if (cv < 15) {
-        dispersionAnalysis = `📊 <strong>Análisis de dispersión:</strong> Los datos muestran <span class="highlight">baja variabilidad</span> (coeficiente de variación: ${cv.toFixed(2)}%). Con una desviación estándar de ${stats.stdDev.toFixed(2)}, los valores están relativamente concentrados alrededor de la media, indicando homogeneidad en la distribución.`;
-    } else if (cv < 30) {
-        dispersionAnalysis = `📊 <strong>Análisis de dispersión:</strong> Los datos presentan <span class="highlight">variabilidad moderada</span> (coeficiente de variación: ${cv.toFixed(2)}%). La desviación estándar de ${stats.stdDev.toFixed(2)} sugiere una dispersión equilibrada de los valores.`;
+    if (percentageRange === 0) {
+        conclusions.push(`� <strong>Sectores equilibrados:</strong> Todos los sectores del gráfico de pastel tienen exactamente el mismo tamaño (${maxPercentage}% cada uno), creando una distribución perfectamente equilibrada donde cada valor tiene la misma importancia visual.`);
+    } else if (percentageRange <= 20) {
+        conclusions.push(`� <strong>Distribución balanceada:</strong> Los sectores del gráfico de pastel presentan tamaños relativamente similares, con una diferencia máxima de ${percentageRange.toFixed(1)} puntos porcentuales entre el sector más grande y el más pequeño, lo que indica una distribución bastante equilibrada.`);
     } else {
-        dispersionAnalysis = `📊 <strong>Análisis de dispersión:</strong> Los datos muestran <span class="highlight">alta variabilidad</span> (coeficiente de variación: ${cv.toFixed(2)}%). Con una desviación estándar de ${stats.stdDev.toFixed(2)}, existe considerable dispersión entre los valores, indicando heterogeneidad en la distribución.`;
-    }
-    
-    conclusions.push(dispersionAnalysis);
-    
-    // Análisis de la mediana
-    if (Math.abs(stats.mean - stats.median) < 0.1) {
-        conclusions.push(`⚖️ <strong>Simetría de los datos:</strong> La media (${stats.mean.toFixed(2)}) y la mediana (${stats.median}) son muy similares, lo que sugiere que la distribución es aproximadamente simétrica.`);
-    } else if (stats.mean > stats.median) {
-        conclusions.push(`⚖️ <strong>Asimetría de los datos:</strong> La media (${stats.mean.toFixed(2)}) es mayor que la mediana (${stats.median}), indicando una distribución con sesgo hacia la derecha (valores altos más dispersos).`);
-    } else {
-        conclusions.push(`⚖️ <strong>Asimetría de los datos:</strong> La media (${stats.mean.toFixed(2)}) es menor que la mediana (${stats.median}), indicando una distribución con sesgo hacia la izquierda (valores bajos más dispersos).`);
+        const smallestSectors = freqRows.filter(row => row.percentage === minPercentage);
+        conclusions.push(`🔹 <strong>Contraste marcado:</strong> El gráfico de pastel revela un fuerte contraste entre sectores, donde los más pequeños (${smallestSectors.map(row => `${row.value}: ${row.percentage}%`).join(', ')}) contrastan notablemente con los más grandes, creando una distribución visualmente desigual.`);
     }
     
     return conclusions.map(conclusion => `<p>${conclusion}</p>`).join('');
