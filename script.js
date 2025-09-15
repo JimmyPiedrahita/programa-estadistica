@@ -10,7 +10,7 @@
  */
 function parseInput(inputString) {
     if (!inputString || inputString.trim() === '') {
-        throw new Error('Por favor, ingrese algunos datos para procesar.');
+        throw new Error('Por favor, ingrese la cantidad de errores corregidos por cada programador.');
     }
 
     // Separar por diferentes delimitadores
@@ -30,8 +30,8 @@ function parseInput(inputString) {
         const trimmed = rawValues[i].trim();
         const parsed = parseInt(trimmed);
         
-        // Verificar que sea un número entero válido
-        if (isNaN(parsed) || !Number.isInteger(parsed) || parsed.toString() !== trimmed) {
+        // Verificar que sea un número entero válido y no negativo (no puede haber errores negativos)
+        if (isNaN(parsed) || !Number.isInteger(parsed) || parsed.toString() !== trimmed || parsed < 0) {
             invalidValues.push(trimmed);
         } else {
             numbers.push(parsed);
@@ -39,11 +39,11 @@ function parseInput(inputString) {
     }
 
     if (invalidValues.length > 0) {
-        throw new Error(`Los siguientes valores no son números enteros válidos: ${invalidValues.join(', ')}`);
+        throw new Error(`Los siguientes valores no son cantidades válidas de errores corregidos: ${invalidValues.join(', ')}. Debe ingresar números enteros no negativos.`);
     }
 
     if (numbers.length === 0) {
-        throw new Error('No se encontraron números enteros válidos en la entrada.');
+        throw new Error('No se encontraron cantidades válidas de errores corregidos.');
     }
 
     return numbers;
@@ -223,8 +223,8 @@ function buildFreqTableDOM(freqRows, containerId) {
     // Crear encabezados
     const thead = document.createElement('thead');
     const headerRow = document.createElement('tr');
-    const headers = ['Valor (xᵢ)', 'Frecuencia Absoluta (fa)', 'Frecuencia Relativa (fr)', 
-                    'Frecuencia Abs. Acumulada (Fa)', 'Frecuencia Rel. Acumulada (Fr)', 'Porcentaje (%)'];
+    const headers = ['Errores Corregidos', 'Programadores (fa)', 'Frecuencia Relativa (fr)', 
+                    'Acumulado (Fa)', 'Acumulado Relativo (Fr)', 'Porcentaje (%)'];
     
     headers.forEach(headerText => {
         const th = document.createElement('th');
@@ -298,7 +298,7 @@ function drawBarChart(canvasId, freqRows) {
         barChart.destroy();
     }
     
-    const labels = freqRows.map(row => row.value.toString());
+    const labels = freqRows.map(row => `${row.value} errores`);
     const data = freqRows.map(row => row.fa);
     
     barChart = new Chart(ctx, {
@@ -306,7 +306,7 @@ function drawBarChart(canvasId, freqRows) {
         data: {
             labels: labels,
             datasets: [{
-                label: 'Frecuencia Absoluta',
+                label: 'Número de Programadores',
                 data: data,
                 backgroundColor: 'rgba(102, 126, 234, 0.8)',
                 borderColor: 'rgba(102, 126, 234, 1)',
@@ -321,7 +321,7 @@ function drawBarChart(canvasId, freqRows) {
             plugins: {
                 title: {
                     display: true,
-                    text: 'Distribución de Frecuencias',
+                    text: 'Distribución de Errores Corregidos por Programador',
                     font: {
                         size: 16,
                         weight: 'bold'
@@ -339,13 +339,13 @@ function drawBarChart(canvasId, freqRows) {
                     },
                     title: {
                         display: true,
-                        text: 'Frecuencia Absoluta'
+                        text: 'Número de Programadores'
                     }
                 },
                 x: {
                     title: {
                         display: true,
-                        text: 'Valores'
+                        text: 'Cantidad de Errores Corregidos'
                     }
                 }
             }
@@ -366,7 +366,7 @@ function drawPieChart(canvasId, freqRows) {
         pieChart.destroy();
     }
     
-    const labels = freqRows.map(row => `Valor ${row.value}`);
+    const labels = freqRows.map(row => `${row.value} errores`);
     const data = freqRows.map(row => row.percentage);
     
     // Generar colores dinámicamente
@@ -389,7 +389,7 @@ function drawPieChart(canvasId, freqRows) {
             plugins: {
                 title: {
                     display: true,
-                    text: 'Distribución Porcentual',
+                    text: 'Distribución Porcentual de la Carga de Trabajo',
                     font: {
                         size: 16,
                         weight: 'bold'
@@ -403,8 +403,9 @@ function drawPieChart(canvasId, freqRows) {
                             if (data.labels.length && data.datasets.length) {
                                 return data.labels.map((label, i) => {
                                     const percentage = data.datasets[0].data[i];
+                                    const count = freqRows[i].fa;
                                     return {
-                                        text: `${label}: ${percentage}%`,
+                                        text: `${label}: ${percentage}% (${count} prog.)`,
                                         fillStyle: data.datasets[0].backgroundColor[i],
                                         strokeStyle: data.datasets[0].borderColor[i],
                                         lineWidth: data.datasets[0].borderWidth,
@@ -421,7 +422,8 @@ function drawPieChart(canvasId, freqRows) {
                         label: function(context) {
                             const label = context.label || '';
                             const value = context.parsed || 0;
-                            return `${label}: ${value}%`;
+                            const count = freqRows[context.dataIndex].fa;
+                            return `${label}: ${value}% (${count} programadores)`;
                         }
                     }
                 }
@@ -478,7 +480,7 @@ function generateColors(count) {
 // ===========================
 
 /**
- * Muestra el resumen estadístico
+ * Muestra el resumen estadístico específico para el análisis de errores
  * @param {Object} stats - Objeto con estadísticas calculadas
  * @param {string} containerId - ID del contenedor
  */
@@ -489,15 +491,15 @@ function renderSummary(stats, containerId) {
     container.innerHTML = '';
     
     const statsData = [
-        { label: 'Tamaño de muestra (n)', value: stats.n },
-        { label: 'Suma total', value: stats.sum },
-        { label: 'Mínimo', value: stats.min },
-        { label: 'Máximo', value: stats.max },
-        { label: 'Media aritmética', value: stats.mean.toFixed(2) },
-        { label: 'Mediana', value: stats.median },
-        { label: 'Moda', value: stats.modeText },
-        { label: 'Rango', value: stats.range },
-        { label: 'Varianza', value: stats.variance.toFixed(4) },
+        { label: 'Programadores evaluados', value: stats.n },
+        { label: 'Total errores corregidos', value: stats.sum },
+        { label: 'Mínimo errores (programador)', value: stats.min },
+        { label: 'Máximo errores (programador)', value: stats.max },
+        { label: 'Promedio errores por programador', value: stats.mean.toFixed(2) },
+        { label: 'Mediana de errores', value: stats.median },
+        { label: 'Cantidad más frecuente', value: stats.modeText },
+        { label: 'Rango de variación', value: stats.range },
+        { label: 'Varianza del rendimiento', value: stats.variance.toFixed(4) },
         { label: 'Desviación estándar', value: stats.stdDev.toFixed(4) }
     ];
     
@@ -519,7 +521,7 @@ function renderSummary(stats, containerId) {
 }
 
 /**
- * Genera conclusiones automáticas enfocadas en los gráficos
+ * Genera conclusiones específicas para el análisis de errores funcionales críticos
  * @param {Array} freqRows - Datos de frecuencias
  * @param {Object} stats - Estadísticas calculadas
  * @returns {string} HTML con conclusiones
@@ -528,64 +530,63 @@ function generateAutomaticConclusions(freqRows, stats) {
     let conclusions = [];
     
     // === CONCLUSIONES DEL GRÁFICO DE BARRAS ===
-    conclusions.push(`📊 <strong>Análisis del Gráfico de Barras:</strong>`);
+    conclusions.push(`📊 <strong>Análisis de la Distribución de Errores (Gráfico de Barras):</strong>`);
     
-    // Conclusión 1: Análisis de altura de barras y distribución
+    // Conclusión 1: Análisis de la carga de trabajo por cantidad de errores
     const maxFreq = Math.max(...freqRows.map(row => row.fa));
     const minFreq = Math.min(...freqRows.map(row => row.fa));
     const valuesWithMaxFreq = freqRows.filter(row => row.fa === maxFreq);
     
     if (maxFreq === minFreq) {
-        conclusions.push(`� <strong>Distribución uniforme:</strong> En el gráfico de barras se observa que todas las barras tienen la misma altura (frecuencia = ${maxFreq}), lo que indica una distribución perfectamente uniforme donde todos los valores aparecen con la misma frecuencia.`);
+        conclusions.push(`🔹 <strong>Distribución uniforme de cargas:</strong> El gráfico de barras muestra que todas las cantidades de errores corregidos aparecen con la misma frecuencia (${maxFreq} programadores cada una), indicando que no hay concentración en niveles específicos de rendimiento. Esto sugiere una distribución equilibrada de las cargas de trabajo.`);
     } else {
-        const tallestBars = valuesWithMaxFreq.map(row => row.value).join(', ');
-        conclusions.push(`� <strong>Barras dominantes:</strong> El gráfico de barras muestra que ${valuesWithMaxFreq.length === 1 ? 'la barra más alta corresponde al valor' : 'las barras más altas corresponden a los valores'} <span class="highlight">${tallestBars}</span> con una frecuencia de <span class="highlight">${maxFreq}</span>, destacándose claramente sobre las demás barras del gráfico.`);
+        const mostCommonErrorCounts = valuesWithMaxFreq.map(row => row.value).join(', ');
+        conclusions.push(`🔹 <strong>Concentración en niveles específicos:</strong> El gráfico de barras revela que ${valuesWithMaxFreq.length === 1 ? 'la cantidad más común de errores corregidos es' : 'las cantidades más comunes de errores corregidos son'} <span class="highlight">${mostCommonErrorCounts}</span>, con <span class="highlight">${maxFreq}</span> programadores en ${valuesWithMaxFreq.length === 1 ? 'este nivel' : 'estos niveles'}. Esto indica una tendencia del equipo hacia ciertos rangos de productividad.`);
     }
     
-    // Conclusión 2: Análisis de patrón de distribución
+    // Conclusión 2: Análisis de patrones de rendimiento del equipo
     const orderedFreqs = freqRows.map(row => row.fa);
-    const isIncreasing = orderedFreqs.every((freq, i) => i === 0 || freq >= orderedFreqs[i-1]);
-    const isDecreasing = orderedFreqs.every((freq, i) => i === 0 || freq <= orderedFreqs[i-1]);
+    const sortedErrorCounts = freqRows.map(row => row.value).sort((a, b) => a - b);
+    const lowPerformers = freqRows.filter(row => row.value <= stats.mean * 0.7);
+    const highPerformers = freqRows.filter(row => row.value >= stats.mean * 1.3);
     
-    if (isIncreasing && !isDecreasing) {
-        conclusions.push(`� <strong>Patrón creciente:</strong> Las barras del gráfico muestran un patrón ascendente, donde las frecuencias tienden a aumentar conforme avanzan los valores, creando una forma creciente en la distribución.`);
-    } else if (isDecreasing && !isIncreasing) {
-        conclusions.push(`🔹 <strong>Patrón decreciente:</strong> Las barras del gráfico presentan un patrón descendente, donde las frecuencias disminuyen progresivamente, formando una distribución decreciente.`);
+    if (lowPerformers.length > 0 && highPerformers.length > 0) {
+        conclusions.push(`🔹 <strong>Evidencia de disparidad en el rendimiento:</strong> Las barras del gráfico muestran una distribución polarizada con programadores de bajo rendimiento (≤${(stats.mean * 0.7).toFixed(1)} errores) y alto rendimiento (≥${(stats.mean * 1.3).toFixed(1)} errores), sugiriendo diferencias significativas en la capacidad de corrección de errores del equipo.`);
+    } else if (Math.max(...sortedErrorCounts) - Math.min(...sortedErrorCounts) <= 3) {
+        conclusions.push(`🔹 <strong>Rendimiento homogéneo del equipo:</strong> Las barras presentan alturas relativamente similares, con una variación máxima de ${Math.max(...sortedErrorCounts) - Math.min(...sortedErrorCounts)} errores entre programadores, indicando un rendimiento consistente y equilibrado en la corrección de errores funcionales.`);
     } else {
-        const uniqueFreqs = [...new Set(orderedFreqs)].length;
-        if (uniqueFreqs === 1) {
-            conclusions.push(`� <strong>Altura uniforme:</strong> Todas las barras mantienen la misma altura en el gráfico, indicando que no hay valores predominantes en la distribución.`);
-        } else {
-            conclusions.push(`🔹 <strong>Distribución irregular:</strong> Las barras del gráfico no siguen un patrón específico, presentando alturas variables que crean una distribución irregular con picos y valles a lo largo de los diferentes valores.`);
-        }
+        conclusions.push(`🔹 <strong>Variabilidad moderada en el rendimiento:</strong> El gráfico muestra una distribución irregular de las barras, reflejando diferentes niveles de productividad en el equipo, con algunos programadores sobresaliendo en la corrección de errores mientras otros muestran un rendimiento más conservador.`);
     }
     
     // === CONCLUSIONES DEL GRÁFICO DE PASTEL ===
-    conclusions.push(`🥧 <strong>Análisis del Gráfico de Pastel:</strong>`);
+    conclusions.push(`🥧 <strong>Análisis de la Carga de Trabajo por Programador (Gráfico de Pastel):</strong>`);
     
-    // Conclusión 1: Análisis de sectores dominantes
+    // Conclusión 1: Análisis de distribución de la carga total
     const maxPercentage = Math.max(...freqRows.map(row => row.percentage));
     const sectorsWithMaxPercentage = freqRows.filter(row => row.percentage === maxPercentage);
     
-    if (maxPercentage >= 50) {
-        const dominantValue = sectorsWithMaxPercentage[0].value;
-        conclusions.push(`� <strong>Sector dominante:</strong> En el gráfico de pastel se observa que el sector correspondiente al valor <span class="highlight">${dominantValue}</span> ocupa más de la mitad del círculo (<span class="highlight">${maxPercentage}%</span>), dominando visualmente la distribución y evidenciando su alta representatividad en los datos.`);
+    if (maxPercentage >= 40) {
+        const dominantErrorCount = sectorsWithMaxPercentage[0].value;
+        const programmersInLevel = sectorsWithMaxPercentage[0].fa;
+        conclusions.push(`🔹 <strong>Concentración significativa de la carga:</strong> El gráfico de pastel muestra que los programadores que corrigieron <span class="highlight">${dominantErrorCount}</span> errores representan <span class="highlight">${maxPercentage}%</span> del equipo (${programmersInLevel} de ${stats.n} programadores), indicando una concentración significativa en este nivel de rendimiento, lo que podría señalar un estándar de productividad esperado.`);
     } else {
-        const largestSectors = sectorsWithMaxPercentage.map(row => `${row.value} (${row.percentage}%)`).join(', ');
-        conclusions.push(`� <strong>Sectores principales:</strong> El gráfico de pastel muestra que ${sectorsWithMaxPercentage.length === 1 ? 'el sector más grande corresponde al valor' : 'los sectores más grandes corresponden a los valores'} <span class="highlight">${largestSectors}</span>, aunque ningún sector individual domina completamente el círculo.`);
+        const distributedLevels = sectorsWithMaxPercentage.map(row => `${row.value} errores (${row.percentage}%)`).join(', ');
+        conclusions.push(`🔹 <strong>Distribución balanceada de la carga:</strong> El gráfico de pastel revela que ningún nivel específico de errores corregidos domina significativamente al equipo. Los niveles más comunes son <span class="highlight">${distributedLevels}</span>, sugiriendo una distribución equilibrada de las capacidades y responsabilidades del equipo.`);
     }
     
-    // Conclusión 2: Análisis de equilibrio de sectores
+    // Conclusión 2: Análisis de equilibrio del equipo y recomendaciones
     const minPercentage = Math.min(...freqRows.map(row => row.percentage));
     const percentageRange = maxPercentage - minPercentage;
+    const cv = (stats.stdDev / stats.mean) * 100; // Coeficiente de variación
     
-    if (percentageRange === 0) {
-        conclusions.push(`� <strong>Sectores equilibrados:</strong> Todos los sectores del gráfico de pastel tienen exactamente el mismo tamaño (${maxPercentage}% cada uno), creando una distribución perfectamente equilibrada donde cada valor tiene la misma importancia visual.`);
-    } else if (percentageRange <= 20) {
-        conclusions.push(`� <strong>Distribución balanceada:</strong> Los sectores del gráfico de pastel presentan tamaños relativamente similares, con una diferencia máxima de ${percentageRange.toFixed(1)} puntos porcentuales entre el sector más grande y el más pequeño, lo que indica una distribución bastante equilibrada.`);
+    if (cv <= 20) {
+        conclusions.push(`🔹 <strong>Equipo bien equilibrado:</strong> Los sectores del gráfico muestran tamaños relativamente uniformes con un coeficiente de variación de ${cv.toFixed(1)}%, indicando que la carga de corrección de errores está bien distribuida. <span class="highlight">Recomendación:</span> Mantener las prácticas actuales de asignación de trabajo y considerar este equipo como referencia para otros grupos.`);
+    } else if (cv <= 35) {
+        conclusions.push(`🔹 <strong>Disparidad moderada identificada:</strong> El gráfico revela diferencias moderadas en los sectores con un coeficiente de variación de ${cv.toFixed(1)}%, sugiriendo algunas inconsistencias en la carga de trabajo. <span class="highlight">Recomendación:</span> Implementar sesiones de nivelación de conocimientos y revisar la asignación de tareas para equilibrar mejor la carga.`);
     } else {
-        const smallestSectors = freqRows.filter(row => row.percentage === minPercentage);
-        conclusions.push(`🔹 <strong>Contraste marcado:</strong> El gráfico de pastel revela un fuerte contraste entre sectores, donde los más pequeños (${smallestSectors.map(row => `${row.value}: ${row.percentage}%`).join(', ')}) contrastan notablemente con los más grandes, creando una distribución visualmente desigual.`);
+        const lowPerformersCount = freqRows.filter(row => row.value < stats.mean * 0.8).reduce((sum, row) => sum + row.fa, 0);
+        const highPerformersCount = freqRows.filter(row => row.value > stats.mean * 1.2).reduce((sum, row) => sum + row.fa, 0);
+        conclusions.push(`🔹 <strong>Disparidad significativa detectada:</strong> Los sectores muestran un contraste marcado con un coeficiente de variación de ${cv.toFixed(1)}%, evidenciando desequilibrio en la carga de corrección de errores (${lowPerformersCount} programadores con bajo rendimiento vs ${highPerformersCount} con alto rendimiento). <span class="highlight">Recomendación:</span> Implementar programa de mentoring, redistributir tareas según experiencia y evaluar la necesidad de capacitación especializada.`);
     }
     
     return conclusions.map(conclusion => `<p>${conclusion}</p>`).join('');

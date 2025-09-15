@@ -57,6 +57,44 @@ section h2 {
     padding-bottom: 10px;
 }
 
+/* Contexto del problema */
+.problem-context {
+    background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+    border-left: 5px solid #667eea;
+}
+
+.problem-description {
+    font-size: 1.05em;
+    line-height: 1.7;
+}
+
+.problem-description p {
+    margin-bottom: 15px;
+}
+
+.problem-description strong {
+    color: #2d3748;
+    font-weight: 600;
+}
+
+.error-types {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    margin: 15px 0;
+    border-left: 4px solid #4299e1;
+}
+
+.error-types ul {
+    margin: 10px 0;
+    padding-left: 20px;
+}
+
+.error-types li {
+    margin: 8px 0;
+    color: #4a5568;
+}
+
 /* Entrada de datos */
 .input-container {
     display: flex;

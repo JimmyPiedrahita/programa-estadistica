@@ -10,22 +10,45 @@
 <body>
     <div class="container">
         <header>
-            <h1>📊 Análisis Estadístico Descriptivo</h1>
-            <p>Análisis de variables cuantitativas discretas no agrupadas</p>
+            <h1>📊 Análisis de Errores Funcionales Críticos</h1>
+            <p>Evaluación del rendimiento del equipo de desarrollo en corrección de errores</p>
         </header>
+
+        <!-- Contexto del problema -->
+        <section class="problem-context">
+            <h2>🎯 Contexto del Problema</h2>
+            <div class="problem-description">
+                <p><strong>Situación:</strong> El equipo de calidad ha finalizado la revisión del sprint de 2 semanas. Se registró la cantidad de errores funcionales críticos corregidos satisfactoriamente por cada uno de los 10 programadores del equipo.</p>
+                
+                <p><strong>Objetivo:</strong> Analizar la distribución de la carga de corrección de errores y determinar si el esfuerzo está equilibrado entre los miembros del equipo.</p>
+                
+                <div class="error-types">
+                    <p><strong>Tipos de errores evaluados:</strong></p>
+                    <ul>
+                        <li>🔍 Errores de validación de entradas</li>
+                        <li>🧠 Errores de lógica en el código</li>
+                        <li>🗄️ Errores en consultas a la base de datos</li>
+                        <li>🎨 Errores en la interfaz de usuario (UI)</li>
+                        <li>🔗 Errores de integración</li>
+                    </ul>
+                </div>
+                
+                <p><strong>Variable de estudio:</strong> Cantidad de errores funcionales críticos corregidos satisfactoriamente por cada programador (Variable cuantitativa discreta, nivel de razón).</p>
+            </div>
+        </section>
 
         <!-- Sección de entrada de datos -->
         <section class="input-section">
-            <h2>📋 Entrada de Datos</h2>
+            <h2>📋 Datos del Sprint</h2>
             <div class="input-container">
-                <label for="dataInput">Ingrese los datos (números enteros separados por coma, espacio, punto y coma o salto de línea):</label>
+                <label for="dataInput">Ingrese la cantidad de errores corregidos por cada programador (10 valores enteros separados por coma, espacio, punto y coma o salto de línea):</label>
                 <textarea id="dataInput" 
-                         placeholder="Ejemplo: 13,9,14,11,8,11,10,8,4,11" 
-                         rows="4" 
+                         placeholder="Ejemplo: 5,8,3,12,7,9,4,11,6,8&#10;&#10;Cada número representa los errores corregidos por un programador" 
+                         rows="6" 
                          cols="50"></textarea>
                 
                 <div class="button-group">
-                    <button id="processBtn" onclick="validateAndProcess()">🔄 Procesar Datos</button>
+                    <button id="processBtn" onclick="validateAndProcess()">🔄 Analizar Rendimiento</button>
                 </div>
             </div>
             
@@ -38,26 +61,26 @@
             
             <!-- Resumen estadístico -->
             <div class="summary-section">
-                <h2>📈 Resumen Estadístico</h2>
+                <h2>📈 Análisis del Rendimiento del Equipo</h2>
                 <div id="summaryContainer" class="summary-grid"></div>
             </div>
 
             <!-- Tabla de frecuencias -->
             <div class="table-section">
-                <h2>📋 Tabla de Frecuencias</h2>
+                <h2>📋 Distribución de Errores Corregidos</h2>
                 <div id="frequencyTableContainer"></div>
             </div>
 
             <!-- Gráficos -->
             <div class="charts-section">
-                <h2>📊 Gráficos</h2>
+                <h2>📊 Visualización del Rendimiento</h2>
                 <div class="charts-container">
                     <div class="chart-item">
-                        <h3>Gráfico de Barras</h3>
+                        <h3>Distribución de Errores por Cantidad</h3>
                         <canvas id="barChart" width="400" height="300"></canvas>
                     </div>
                     <div class="chart-item">
-                        <h3>Gráfico de Pastel</h3>
+                        <h3>Proporción de la Carga de Trabajo</h3>
                         <canvas id="pieChart" width="400" height="300"></canvas>
                     </div>
                 </div>
@@ -65,7 +88,7 @@
 
             <!-- Conclusiones -->
             <div class="conclusions-section">
-                <h2>📝 Conclusiones Automáticas</h2>
+                <h2>📝 Evaluación del Equilibrio del Equipo</h2>
                 <div id="conclusionsContainer" class="conclusions-text"></div>
             </div>
 
