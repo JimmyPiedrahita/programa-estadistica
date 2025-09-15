@@ -495,12 +495,9 @@ function renderSummary(stats, containerId) {
         { label: 'Total errores corregidos', value: stats.sum },
         { label: 'Mínimo errores (programador)', value: stats.min },
         { label: 'Máximo errores (programador)', value: stats.max },
-        { label: 'Promedio errores por programador', value: stats.mean.toFixed(2) },
+        { label: 'Media de errores', value: stats.mean.toFixed(2) },
         { label: 'Mediana de errores', value: stats.median },
-        { label: 'Cantidad más frecuente', value: stats.modeText },
-        { label: 'Rango de variación', value: stats.range },
-        { label: 'Varianza del rendimiento', value: stats.variance.toFixed(4) },
-        { label: 'Desviación estándar', value: stats.stdDev.toFixed(4) }
+        { label: 'Moda de errores', value: stats.modeText }
     ];
     
     statsData.forEach(stat => {
