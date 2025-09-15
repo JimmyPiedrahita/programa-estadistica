@@ -527,64 +527,26 @@ function generateAutomaticConclusions(freqRows, stats) {
     let conclusions = [];
     
     // === CONCLUSIONES DEL GRÁFICO DE BARRAS ===
-    conclusions.push(`📊 <strong>Análisis de la Distribución de Errores (Gráfico de Barras):</strong>`);
+    conclusions.push(`📊 <strong>Análisis del Gráfico de Barras:</strong>`);
     
-    // Conclusión 1: Análisis de la carga de trabajo por cantidad de errores
-    const maxFreq = Math.max(...freqRows.map(row => row.fa));
-    const minFreq = Math.min(...freqRows.map(row => row.fa));
-    const valuesWithMaxFreq = freqRows.filter(row => row.fa === maxFreq);
+    // Conclusión 1: Programadores que menos trabajo hicieron
+    const minErrorCount = Math.min(...freqRows.map(row => row.value));
+    const minErrorRow = freqRows.find(row => row.value === minErrorCount);
+    conclusions.push(`🔹 <strong>Programadores con menor carga de trabajo:</strong> Según el gráfico de barras, los programadores que menos errores corrigieron fueron aquellos que completaron <span class="highlight">${minErrorCount} errores</span>. Hay <span class="highlight">${minErrorRow.fa}</span> programador${minErrorRow.fa > 1 ? 'es' : ''} en este nivel de rendimiento.`);
     
-    if (maxFreq === minFreq) {
-        conclusions.push(`🔹 <strong>Distribución uniforme de cargas:</strong> El gráfico de barras muestra que todas las cantidades de errores corregidos aparecen con la misma frecuencia (${maxFreq} programadores cada una), indicando que no hay concentración en niveles específicos de rendimiento. Esto sugiere una distribución equilibrada de las cargas de trabajo.`);
-    } else {
-        const mostCommonErrorCounts = valuesWithMaxFreq.map(row => row.value).join(', ');
-        conclusions.push(`🔹 <strong>Concentración en niveles específicos:</strong> El gráfico de barras revela que ${valuesWithMaxFreq.length === 1 ? 'la cantidad más común de errores corregidos es' : 'las cantidades más comunes de errores corregidos son'} <span class="highlight">${mostCommonErrorCounts}</span>, con <span class="highlight">${maxFreq}</span> programadores en ${valuesWithMaxFreq.length === 1 ? 'este nivel' : 'estos niveles'}. Esto indica una tendencia del equipo hacia ciertos rangos de productividad.`);
-    }
-    
-    // Conclusión 2: Análisis de patrones de rendimiento del equipo
-    const orderedFreqs = freqRows.map(row => row.fa);
-    const sortedErrorCounts = freqRows.map(row => row.value).sort((a, b) => a - b);
-    const lowPerformers = freqRows.filter(row => row.value <= stats.mean * 0.7);
-    const highPerformers = freqRows.filter(row => row.value >= stats.mean * 1.3);
-    
-    if (lowPerformers.length > 0 && highPerformers.length > 0) {
-        conclusions.push(`🔹 <strong>Evidencia de disparidad en el rendimiento:</strong> Las barras del gráfico muestran una distribución polarizada con programadores de bajo rendimiento (≤${(stats.mean * 0.7).toFixed(1)} errores) y alto rendimiento (≥${(stats.mean * 1.3).toFixed(1)} errores), sugiriendo diferencias significativas en la capacidad de corrección de errores del equipo.`);
-    } else if (Math.max(...sortedErrorCounts) - Math.min(...sortedErrorCounts) <= 3) {
-        conclusions.push(`🔹 <strong>Rendimiento homogéneo del equipo:</strong> Las barras presentan alturas relativamente similares, con una variación máxima de ${Math.max(...sortedErrorCounts) - Math.min(...sortedErrorCounts)} errores entre programadores, indicando un rendimiento consistente y equilibrado en la corrección de errores funcionales.`);
-    } else {
-        conclusions.push(`🔹 <strong>Variabilidad moderada en el rendimiento:</strong> El gráfico muestra una distribución irregular de las barras, reflejando diferentes niveles de productividad en el equipo, con algunos programadores sobresaliendo en la corrección de errores mientras otros muestran un rendimiento más conservador.`);
-    }
+    // Conclusión 2: Programadores que más trabajo hicieron
+    const maxErrorCount = Math.max(...freqRows.map(row => row.value));
+    const maxErrorRow = freqRows.find(row => row.value === maxErrorCount);
+    conclusions.push(`🔹 <strong>Programadores con mayor carga de trabajo:</strong> El gráfico de barras muestra que los programadores que más errores corrigieron fueron aquellos que completaron <span class="highlight">${maxErrorCount} errores</span>. Hay <span class="highlight">${maxErrorRow.fa}</span> programador${maxErrorRow.fa > 1 ? 'es' : ''} en este nivel máximo de productividad.`);
     
     // === CONCLUSIONES DEL GRÁFICO DE PASTEL ===
-    conclusions.push(`🥧 <strong>Análisis de la Carga de Trabajo por Programador (Gráfico de Pastel):</strong>`);
+    conclusions.push(`🥧 <strong>Análisis del Gráfico de Pastel:</strong>`);
     
-    // Conclusión 1: Análisis de distribución de la carga total
-    const maxPercentage = Math.max(...freqRows.map(row => row.percentage));
-    const sectorsWithMaxPercentage = freqRows.filter(row => row.percentage === maxPercentage);
+    // Conclusión 1: Porcentaje de programadores que menos trabajo hicieron
+    conclusions.push(`🔹 <strong>Distribución porcentual - menor rendimiento:</strong> En el gráfico de pastel se observa que los programadores con menor carga de trabajo (${minErrorCount} errores) representan el <span class="highlight">${minErrorRow.percentage}%</span> del equipo total. Este sector muestra la proporción del equipo que tuvo el rendimiento más bajo en la corrección de errores.`);
     
-    if (maxPercentage >= 40) {
-        const dominantErrorCount = sectorsWithMaxPercentage[0].value;
-        const programmersInLevel = sectorsWithMaxPercentage[0].fa;
-        conclusions.push(`🔹 <strong>Concentración significativa de la carga:</strong> El gráfico de pastel muestra que los programadores que corrigieron <span class="highlight">${dominantErrorCount}</span> errores representan <span class="highlight">${maxPercentage}%</span> del equipo (${programmersInLevel} de ${stats.n} programadores), indicando una concentración significativa en este nivel de rendimiento, lo que podría señalar un estándar de productividad esperado.`);
-    } else {
-        const distributedLevels = sectorsWithMaxPercentage.map(row => `${row.value} errores (${row.percentage}%)`).join(', ');
-        conclusions.push(`🔹 <strong>Distribución balanceada de la carga:</strong> El gráfico de pastel revela que ningún nivel específico de errores corregidos domina significativamente al equipo. Los niveles más comunes son <span class="highlight">${distributedLevels}</span>, sugiriendo una distribución equilibrada de las capacidades y responsabilidades del equipo.`);
-    }
-    
-    // Conclusión 2: Análisis de equilibrio del equipo y recomendaciones
-    const minPercentage = Math.min(...freqRows.map(row => row.percentage));
-    const percentageRange = maxPercentage - minPercentage;
-    const cv = (stats.stdDev / stats.mean) * 100; // Coeficiente de variación
-    
-    if (cv <= 20) {
-        conclusions.push(`🔹 <strong>Equipo bien equilibrado:</strong> Los sectores del gráfico muestran tamaños relativamente uniformes con un coeficiente de variación de ${cv.toFixed(1)}%, indicando que la carga de corrección de errores está bien distribuida. <span class="highlight">Recomendación:</span> Mantener las prácticas actuales de asignación de trabajo y considerar este equipo como referencia para otros grupos.`);
-    } else if (cv <= 35) {
-        conclusions.push(`🔹 <strong>Disparidad moderada identificada:</strong> El gráfico revela diferencias moderadas en los sectores con un coeficiente de variación de ${cv.toFixed(1)}%, sugiriendo algunas inconsistencias en la carga de trabajo. <span class="highlight">Recomendación:</span> Implementar sesiones de nivelación de conocimientos y revisar la asignación de tareas para equilibrar mejor la carga.`);
-    } else {
-        const lowPerformersCount = freqRows.filter(row => row.value < stats.mean * 0.8).reduce((sum, row) => sum + row.fa, 0);
-        const highPerformersCount = freqRows.filter(row => row.value > stats.mean * 1.2).reduce((sum, row) => sum + row.fa, 0);
-        conclusions.push(`🔹 <strong>Disparidad significativa detectada:</strong> Los sectores muestran un contraste marcado con un coeficiente de variación de ${cv.toFixed(1)}%, evidenciando desequilibrio en la carga de corrección de errores (${lowPerformersCount} programadores con bajo rendimiento vs ${highPerformersCount} con alto rendimiento). <span class="highlight">Recomendación:</span> Implementar programa de mentoring, redistributir tareas según experiencia y evaluar la necesidad de capacitación especializada.`);
-    }
+    // Conclusión 2: Porcentaje de programadores que más trabajo hicieron
+    conclusions.push(`🔹 <strong>Distribución porcentual - mayor rendimiento:</strong> El gráfico de pastel indica que los programadores con mayor carga de trabajo (${maxErrorCount} errores) constituyen el <span class="highlight">${maxErrorRow.percentage}%</span> del equipo. Este sector representa la proporción del equipo que alcanzó el nivel más alto de productividad en la corrección de errores funcionales.`);
     
     return conclusions.map(conclusion => `<p>${conclusion}</p>`).join('');
 }
