@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Análisis Estadístico Descriptivo</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>📊 Análisis Estadístico Descriptivo</h1>
+            <p>Análisis de variables cuantitativas discretas no agrupadas</p>
+        </header>
+
+        <!-- Sección de entrada de datos -->
+        <section class="input-section">
+            <h2>📋 Entrada de Datos</h2>
+            <div class="input-container">
+                <label for="dataInput">Ingrese los datos (números enteros separados por coma, espacio, punto y coma o salto de línea):</label>
+                <textarea id="dataInput" 
+                         placeholder="Ejemplo: 13,9,14,11,8,11,10,8,4,11" 
+                         rows="4" 
+                         cols="50"></textarea>
+                
+                <div class="button-group">
+                    <button id="processBtn" onclick="validateAndProcess()">🔄 Procesar Datos</button>
+                    <button id="exampleBtn" onclick="loadExample()">📁 Cargar Ejemplo</button>
+                    <button id="downloadBtn" onclick="downloadCSV()" disabled>💾 Descargar CSV</button>
+                </div>
+            </div>
+            
+            <!-- Área de errores -->
+            <div id="errorContainer" class="error-message" style="display: none;"></div>
+        </section>
+
+        <!-- Sección de resultados -->
+        <section id="resultsSection" class="results-section" style="display: none;">
+            
+            <!-- Resumen estadístico -->
+            <div class="summary-section">
+                <h2>📈 Resumen Estadístico</h2>
+                <div id="summaryContainer" class="summary-grid"></div>
+            </div>
+
+            <!-- Tabla de frecuencias -->
+            <div class="table-section">
+                <h2>📋 Tabla de Frecuencias</h2>
+                <div id="frequencyTableContainer"></div>
+            </div>
+
+            <!-- Gráficos -->
+            <div class="charts-section">
+                <h2>📊 Gráficos</h2>
+                <div class="charts-container">
+                    <div class="chart-item">
+                        <h3>Gráfico de Barras</h3>
+                        <canvas id="barChart" width="400" height="300"></canvas>
+                    </div>
+                    <div class="chart-item">
+                        <h3>Gráfico de Pastel</h3>
+                        <canvas id="pieChart" width="400" height="300"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Conclusiones -->
+            <div class="conclusions-section">
+                <h2>📝 Conclusiones Automáticas</h2>
+                <div id="conclusionsContainer" class="conclusions-text"></div>
+            </div>
+
+        </section>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
