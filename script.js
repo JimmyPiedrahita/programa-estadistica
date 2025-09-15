@@ -593,7 +593,6 @@ function validateAndProcess() {
     const inputElement = document.getElementById('dataInput');
     const errorContainer = document.getElementById('errorContainer');
     const resultsSection = document.getElementById('resultsSection');
-    const downloadBtn = document.getElementById('downloadBtn');
     
     // Limpiar errores previos
     errorContainer.style.display = 'none';
@@ -642,10 +641,7 @@ function validateAndProcess() {
         // Mostrar sección de resultados
         resultsSection.style.display = 'block';
         
-        // Habilitar botón de descarga
-        downloadBtn.disabled = false;
-        
-        // Guardar datos para exportación
+        // Guardar datos para posible uso futuro
         window.currentData = { values, stats, freqTable };
         
     } catch (error) {
@@ -655,59 +651,5 @@ function validateAndProcess() {
         
         // Ocultar resultados
         resultsSection.style.display = 'none';
-        downloadBtn.disabled = true;
     }
-}
-
-/**
- * Carga el ejemplo de datos
- */
-function loadExample() {
-    const inputElement = document.getElementById('dataInput');
-    inputElement.value = '13,9,14,11,8,11,10,8,4,11';
-    
-    // Procesar automáticamente
-    validateAndProcess();
-}
-
-/**
- * Descarga los resultados en formato CSV
- */
-function downloadCSV() {
-    if (!window.currentData) return;
-    
-    const { freqTable, stats } = window.currentData;
-    
-    let csvContent = 'data:text/csv;charset=utf-8,';
-    
-    // Agregar resumen estadístico
-    csvContent += 'RESUMEN ESTADÍSTICO\n';
-    csvContent += 'Medida,Valor\n';
-    csvContent += `Tamaño de muestra (n),${stats.n}\n`;
-    csvContent += `Suma total,${stats.sum}\n`;
-    csvContent += `Mínimo,${stats.min}\n`;
-    csvContent += `Máximo,${stats.max}\n`;
-    csvContent += `Media aritmética,${stats.mean.toFixed(4)}\n`;
-    csvContent += `Mediana,${stats.median}\n`;
-    csvContent += `Moda,${stats.modeText}\n`;
-    csvContent += `Rango,${stats.range}\n`;
-    csvContent += `Varianza,${stats.variance.toFixed(4)}\n`;
-    csvContent += `Desviación estándar,${stats.stdDev.toFixed(4)}\n\n`;
-    
-    // Agregar tabla de frecuencias
-    csvContent += 'TABLA DE FRECUENCIAS\n';
-    csvContent += 'Valor (xi),Frecuencia Absoluta (fa),Frecuencia Relativa (fr),Frecuencia Abs. Acumulada (Fa),Frecuencia Rel. Acumulada (Fr),Porcentaje (%)\n';
-    
-    freqTable.forEach(row => {
-        csvContent += `${row.value},${row.fa},${row.fr},${row.Fa},${row.Fr},${row.percentage}\n`;
-    });
-    
-    // Crear y descargar archivo
-    const encodedUri = encodeURI(csvContent);
-    const link = document.createElement('a');
-    link.setAttribute('href', encodedUri);
-    link.setAttribute('download', `analisis_estadistico_${new Date().toISOString().slice(0,10)}.csv`);
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
 }

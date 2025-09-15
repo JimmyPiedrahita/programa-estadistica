@@ -117,31 +117,6 @@ button {
     box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
 }
 
-#exampleBtn {
-    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-    color: white;
-}
-
-#exampleBtn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 5px 15px rgba(245, 87, 108, 0.4);
-}
-
-#downloadBtn {
-    background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
-    color: white;
-}
-
-#downloadBtn:hover:not(:disabled) {
-    transform: translateY(-2px);
-    box-shadow: 0 5px 15px rgba(79, 172, 254, 0.4);
-}
-
-#downloadBtn:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-}
-
 /* Mensajes de error */
 .error-message {
     background: #fed7d7;
