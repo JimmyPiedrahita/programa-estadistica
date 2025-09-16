@@ -317,3 +317,57 @@ button {
     opacity: 0.7;
     pointer-events: none;
 }
+
+/* Estilos para iconos Font Awesome */
+.fas, .far, .fab {
+    margin-right: 8px;
+    color: inherit;
+}
+
+/* Iconos en títulos principales */
+h1 .fas {
+    margin-right: 10px;
+    color: #667eea;
+}
+
+h2 .fas {
+    margin-right: 10px;
+    color: #667eea;
+}
+
+/* Iconos en listas */
+.error-types li .fas {
+    margin-right: 10px;
+    color: #4299e1;
+    width: 16px;
+    text-align: center;
+}
+
+/* Iconos en botones */
+button .fas {
+    margin-right: 6px;
+    font-size: 0.9em;
+}
+
+/* Iconos en mensajes de error */
+.error-message .fas {
+    margin-right: 8px;
+    color: #e53e3e;
+}
+
+/* Iconos en conclusiones */
+.conclusions-text .fas {
+    margin-right: 6px;
+    color: #667eea;
+}
+
+/* Animación sutil para iconos en hover */
+.fas, .far, .fab {
+    transition: transform 0.2s ease;
+}
+
+button:hover .fas,
+h1:hover .fas,
+h2:hover .fas {
+    transform: scale(1.1);
+}

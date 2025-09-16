@@ -3,20 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Análisis Estadístico Descriptivo</title>
+    <title>Estadistica Descriptiva</title>
     <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
     <div class="container">
         <header>
-            <h1>📊 Análisis de Errores Funcionales Críticos</h1>
+            <h1><i class="fas fa-chart-bar"></i>Variable cuantitativa discreta no agrupable</h1>
             <p>Evaluación del rendimiento del equipo de desarrollo en corrección de errores</p>
         </header>
 
         <!-- Contexto del problema -->
         <section class="problem-context">
-            <h2>🎯 Contexto del Problema</h2>
+            <h2><i class="fas fa-bullseye"></i> Contexto del Problema</h2>
             <div class="problem-description">
                 <p><strong>Situación:</strong> El equipo de calidad ha finalizado la revisión del sprint de 2 semanas. Se registró la cantidad de errores funcionales críticos corregidos satisfactoriamente por cada uno de los 10 programadores del equipo.</p>
                 
@@ -25,11 +26,11 @@
                 <div class="error-types">
                     <p><strong>Tipos de errores evaluados:</strong></p>
                     <ul>
-                        <li>🔍 Errores de validación de entradas</li>
-                        <li>🧠 Errores de lógica en el código</li>
-                        <li>🗄️ Errores en consultas a la base de datos</li>
-                        <li>🎨 Errores en la interfaz de usuario (UI)</li>
-                        <li>🔗 Errores de integración</li>
+                        <li><i class="fas fa-search"></i> Errores de validación de entradas</li>
+                        <li><i class="fas fa-brain"></i> Errores de lógica en el código</li>
+                        <li><i class="fas fa-database"></i> Errores en consultas a la base de datos</li>
+                        <li><i class="fas fa-paint-brush"></i> Errores en la interfaz de usuario (UI)</li>
+                        <li><i class="fas fa-link"></i> Errores de integración</li>
                     </ul>
                 </div>
                 
@@ -39,7 +40,7 @@
 
         <!-- Sección de entrada de datos -->
         <section class="input-section">
-            <h2>📋 Datos del Sprint</h2>
+            <h2><i class="fas fa-clipboard-list"></i> Datos del Sprint</h2>
             <div class="input-container">
                 <label for="dataInput">Ingrese la cantidad de errores corregidos por cada programador (10 valores enteros separados por coma, espacio, punto y coma o salto de línea):</label>
                 <textarea id="dataInput" 
@@ -48,7 +49,7 @@
                          cols="50"></textarea>
                 
                 <div class="button-group">
-                    <button id="processBtn" onclick="validateAndProcess()">🔄 Analizar Rendimiento</button>
+                    <button id="processBtn" onclick="validateAndProcess()"><i class="fas fa-sync-alt"></i> Analizar Rendimiento</button>
                 </div>
             </div>
             
@@ -61,19 +62,19 @@
             
             <!-- Resumen estadístico -->
             <div class="summary-section">
-                <h2>📈 Análisis del Rendimiento del Equipo</h2>
+                <h2><i class="fas fa-chart-line"></i> Análisis del Rendimiento del Equipo</h2>
                 <div id="summaryContainer" class="summary-grid"></div>
             </div>
 
             <!-- Tabla de frecuencias -->
             <div class="table-section">
-                <h2>📋 Distribución de Errores Corregidos</h2>
+                <h2><i class="fas fa-table"></i> Distribución de Errores Corregidos</h2>
                 <div id="frequencyTableContainer"></div>
             </div>
 
             <!-- Gráficos -->
             <div class="charts-section">
-                <h2>📊 Visualización del Rendimiento</h2>
+                <h2><i class="fas fa-chart-pie"></i> Visualización del Rendimiento</h2>
                 <div class="charts-container">
                     <div class="chart-item">
                         <h3>Distribución de Errores por Cantidad</h3>
@@ -88,7 +89,7 @@
 
             <!-- Conclusiones -->
             <div class="conclusions-section">
-                <h2>📝 Evaluación del Equilibrio del Equipo</h2>
+                <h2><i class="fas fa-file-alt"></i> Evaluación del Equilibrio del Equipo</h2>
                 <div id="conclusionsContainer" class="conclusions-text"></div>
             </div>
 

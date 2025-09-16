@@ -527,26 +527,26 @@ function generateAutomaticConclusions(freqRows, stats) {
     let conclusions = [];
     
     // === CONCLUSIONES DEL GRÁFICO DE BARRAS ===
-    conclusions.push(`📊 <strong>Análisis del Gráfico de Barras:</strong>`);
+    conclusions.push(`<i class="fas fa-chart-bar"></i> <strong>Análisis del Gráfico de Barras:</strong>`);
     
     // Conclusión 1: Programadores que menos trabajo hicieron
     const minErrorCount = Math.min(...freqRows.map(row => row.value));
     const minErrorRow = freqRows.find(row => row.value === minErrorCount);
-    conclusions.push(`🔹 <strong>Programadores con menor carga de trabajo:</strong> Según el gráfico de barras, los programadores que menos errores corrigieron fueron aquellos que completaron <span class="highlight">${minErrorCount} errores</span>. Hay <span class="highlight">${minErrorRow.fa}</span> programador${minErrorRow.fa > 1 ? 'es' : ''} en este nivel de rendimiento.`);
+    conclusions.push(`<i class="fas fa-arrow-down"></i> <strong>Programadores con menor carga de trabajo:</strong> Según el gráfico de barras, los programadores que menos errores corrigieron fueron aquellos que completaron <span class="highlight">${minErrorCount} errores</span>. Hay <span class="highlight">${minErrorRow.fa}</span> programador${minErrorRow.fa > 1 ? 'es' : ''} en este nivel de rendimiento.`);
     
     // Conclusión 2: Programadores que más trabajo hicieron
     const maxErrorCount = Math.max(...freqRows.map(row => row.value));
     const maxErrorRow = freqRows.find(row => row.value === maxErrorCount);
-    conclusions.push(`🔹 <strong>Programadores con mayor carga de trabajo:</strong> El gráfico de barras muestra que los programadores que más errores corrigieron fueron aquellos que completaron <span class="highlight">${maxErrorCount} errores</span>. Hay <span class="highlight">${maxErrorRow.fa}</span> programador${maxErrorRow.fa > 1 ? 'es' : ''} en este nivel máximo de productividad.`);
+    conclusions.push(`<i class="fas fa-arrow-up"></i> <strong>Programadores con mayor carga de trabajo:</strong> El gráfico de barras muestra que los programadores que más errores corrigieron fueron aquellos que completaron <span class="highlight">${maxErrorCount} errores</span>. Hay <span class="highlight">${maxErrorRow.fa}</span> programador${maxErrorRow.fa > 1 ? 'es' : ''} en este nivel máximo de productividad.`);
     
     // === CONCLUSIONES DEL GRÁFICO DE PASTEL ===
-    conclusions.push(`🥧 <strong>Análisis del Gráfico de Pastel:</strong>`);
+    conclusions.push(`<i class="fas fa-chart-pie"></i> <strong>Análisis del Gráfico de Pastel:</strong>`);
     
     // Conclusión 1: Porcentaje de programadores que menos trabajo hicieron
-    conclusions.push(`🔹 <strong>Distribución porcentual - menor rendimiento:</strong> En el gráfico de pastel se observa que los programadores con menor carga de trabajo (${minErrorCount} errores) representan el <span class="highlight">${minErrorRow.percentage}%</span> del equipo total. Este sector muestra la proporción del equipo que tuvo el rendimiento más bajo en la corrección de errores.`);
+    conclusions.push(`<i class="fas fa-percentage"></i> <strong>Distribución porcentual - menor rendimiento:</strong> En el gráfico de pastel se observa que los programadores con menor carga de trabajo (${minErrorCount} errores) representan el <span class="highlight">${minErrorRow.percentage}%</span> del equipo total. Este sector muestra la proporción del equipo que tuvo el rendimiento más bajo en la corrección de errores.`);
     
     // Conclusión 2: Porcentaje de programadores que más trabajo hicieron
-    conclusions.push(`🔹 <strong>Distribución porcentual - mayor rendimiento:</strong> El gráfico de pastel indica que los programadores con mayor carga de trabajo (${maxErrorCount} errores) constituyen el <span class="highlight">${maxErrorRow.percentage}%</span> del equipo. Este sector representa la proporción del equipo que alcanzó el nivel más alto de productividad en la corrección de errores funcionales.`);
+    conclusions.push(`<i class="fas fa-percentage"></i> <strong>Distribución porcentual - mayor rendimiento:</strong> El gráfico de pastel indica que los programadores con mayor carga de trabajo (${maxErrorCount} errores) constituyen el <span class="highlight">${maxErrorRow.percentage}%</span> del equipo. Este sector representa la proporción del equipo que alcanzó el nivel más alto de productividad en la corrección de errores funcionales.`);
     
     return conclusions.map(conclusion => `<p>${conclusion}</p>`).join('');
 }
@@ -615,7 +615,7 @@ function validateAndProcess() {
         
     } catch (error) {
         // Mostrar error
-        errorContainer.innerHTML = `<strong>❌ Error:</strong> ${error.message}`;
+        errorContainer.innerHTML = `<strong><i class="fas fa-times-circle"></i> Error:</strong> ${error.message}`;
         errorContainer.style.display = 'block';
         
         // Ocultar resultados
